@@ -412,47 +412,18 @@ class Poison_Necro(IChar):
         self.bone_armor()
         
 
-    def Summon_Check(self):
+    def Raise_Random(self):
+        # Raise_Random
         pickx = random.uniform(1, 3)
-        rx = random.uniform(0, 10)
-        ry = random.uniform(0, -10)
-        
-        if pickx == 1:
-            self._raise_skeleton([0,rx],180,cast_count=2)
-            self._raise_skeleton([0,ry],180,cast_count=1)
-        if pickx == 2:
-            self._raise_mage([0,rx],180,cast_count=1)
-            self._raise_mage([0,ry],180,cast_count=2)
-        if pickx == 3:
-            self._revive([0,rx],180,cast_count=2)
-            self._revive([0,ry],180,cast_count=1)
-        
+        if pickx < 2.2:
+            self._cast_circle(cast_dir=[-1,1],cast_start_angle=0,cast_end_angle=720,cast_div=8,cast_v_div=4,cast_spell='raise_revive',delay=1.1,offset=.8)
+        if pickx < 2.6:
+            self._cast_circle(cast_dir=[-1,1],cast_start_angle=0,cast_end_angle=720,cast_div=8,cast_v_div=4,cast_spell='raise_skeleton',delay=1.1,offset=.8)
+        if pickx > 2.6:
+            self._cast_circle(cast_dir=[-1,1],cast_start_angle=0,cast_end_angle=720,cast_div=8,cast_v_div=4,cast_spell='raise_mage',delay=1.1,offset=.8)
+        # Check if golem alive
         if self._golem_count == "none":
             self._clay_golem()
-
-        """
-        for _ in range(2):
-            self._summon_count()
-            if self._revive_count < 18:
-                rx = random.uniform(0, 10)
-                ry = random.uniform(0, -10)
-                self._revive([0,rx],180,cast_count=2)
-                self._revive([0,ry],180,cast_count=2)
-            if self._skeletons_count < 14:
-                rx = random.uniform(0, 10)
-                ry = random.uniform(0, -10)
-                self._raise_skeleton([0,rx],180,cast_count=2)
-                self._raise_skeleton([0,ry],180,cast_count=2)
-            if self._mages_count < 14:
-                rx = random.uniform(0, 10)
-                ry = random.uniform(0, -10)
-                self._raise_mage([0,rx],180,cast_count=2)
-                self._raise_mage([0,ry],180,cast_count=2)
-        if self._golem_count == "none":
-            self._clay_golem()
-        self._summon_count()
-        self._summon_stat()
-        """
 
     def kill_pindle(self) -> bool:
         pos_m = screen.convert_abs_to_monitor((0, 30))
@@ -627,10 +598,11 @@ class Poison_Necro(IChar):
 
         if location == "sealdance": #if seal opening fails & trash needs to be cleared -> used at ANY seal
             ### APPROACH
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -641,6 +613,7 @@ class Poison_Necro(IChar):
         elif location == "rof_01": #node 603 - outside CS in ROF
             ### APPROACH ###
             if not self._pather.traverse_nodes([603], self, time_out=3): return False #calibrate after static path
+            self.poison_nova(1.0)
             pos_m = convert_abs_to_monitor((0, 0))
             ### ATTACK ###
             self.Chaos_Attack_Basic()
@@ -649,7 +622,7 @@ class Poison_Necro(IChar):
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
 
             
             ### LOOT ###
@@ -660,20 +633,22 @@ class Poison_Necro(IChar):
         elif location == "rof_02": #node 604 - inside ROF
             ### APPROACH ###
             if not self._pather.traverse_nodes([604], self, time_out=3): return False  #threshold=0.8 (ex 601)
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
         elif location == "entrance_hall_01": ##static_path "diablo_entrance_hall_1", node 677, CS Entrance Hall1
             ### APPROACH ###
             self._pather.traverse_nodes_fixed("diablo_entrance_hall_1", self) # 604 -> 671 Hall1
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -681,11 +656,13 @@ class Poison_Necro(IChar):
             ### APPROACH ###
             if not self._pather.traverse_nodes([670], self): return False # pull top mobs 672 to bottom 670
             self._pather.traverse_nodes_fixed("diablo_entrance_1_670_672", self) # 604 -> 671 Hall1
+            self.poison_nova(1.0)
             if not self._pather.traverse_nodes([670], self): return False # pull top mobs 672 to bottom 670
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             #Move to Layout Check
@@ -698,20 +675,22 @@ class Poison_Necro(IChar):
 
         elif location == "entrance1_01": #static_path "diablo_entrance_hall_2", Hall1 (before layout check)
             ### APPROACH ###
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([673], self): return False # , time_out=3): # Re-adjust itself and continues to attack
 
         elif location == "entrance1_02": #node 673
             ### APPROACH ###
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self._pather.traverse_nodes_fixed("diablo_entrance_1_1", self) # Moves char to postion close to node 674 continues to attack
@@ -719,6 +698,7 @@ class Poison_Necro(IChar):
 
         elif location == "entrance1_03": #node 674
             ### APPROACH ###
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### LOOT ###
@@ -729,10 +709,11 @@ class Poison_Necro(IChar):
 
         elif location == "entrance1_04": #node 676- Hall3
             ### APPROACH ###
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -740,10 +721,11 @@ class Poison_Necro(IChar):
 
         elif location == "entrance2_01": #static_path "diablo_entrance_hall_2"
             ### APPROACH ###
+            self.poison_nova(1.0)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self.pre_buff()
@@ -752,18 +734,20 @@ class Poison_Necro(IChar):
             ### APPROACH ###
             #if not self._pather.traverse_nodes([682], self): return False # , time_out=3):
             self._pather.traverse_nodes_fixed("diablo_trash_b_hall2_605_right", self) #pull mobs from the right
+            self.poison_nova(1.0)
             wait (0.2, 0.5)
             if not self._pather.traverse_nodes([605], self): return False#, time_out=3)
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self.pre_buff()
 
         elif location == "entrance2_03": #node 683
             ### APPROACH ###
+            self.poison_nova(1.0)
             #if not self._pather.traverse_nodes([682], self): return False # , time_out=3):
             #self._pather.traverse_nodes_fixed("diablo_entrance2_1", self)
             #if not self._pather.traverse_nodes([683], self): return False # , time_out=3):
@@ -774,7 +758,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self.pre_buff()
@@ -793,7 +777,7 @@ class Poison_Necro(IChar):
             self.Chaos_Attack_Basic()
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([609], self): return False#, time_out=3)
@@ -810,7 +794,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self.pre_buff()
@@ -820,7 +804,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self.pre_buff()
@@ -830,7 +814,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             self.pre_buff()
@@ -849,7 +833,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -858,7 +842,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -877,7 +861,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -886,7 +870,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -900,7 +884,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             # we loot at boss
@@ -911,7 +895,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             # we loot at boss
@@ -922,7 +906,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -933,7 +917,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             # we loot at boss
@@ -944,7 +928,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             # we loot at boss
@@ -962,7 +946,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             # we loot at boss
@@ -973,7 +957,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             # we loot at boss
@@ -1030,7 +1014,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
 
@@ -1104,7 +1088,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([655], self): return False # , time_out=3):
@@ -1116,7 +1100,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([652], self): return False # , time_out=3):
@@ -1181,7 +1165,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([664, 665], self): return False # , time_out=3):
@@ -1192,7 +1176,7 @@ class Poison_Necro(IChar):
             ### ATTACK ###
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
         return True
@@ -1209,7 +1193,7 @@ class Poison_Necro(IChar):
             self.Chaos_Attack_Basic()
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([612], self): return False # , time_out=3):
@@ -1229,7 +1213,7 @@ class Poison_Necro(IChar):
             if not self._pather.traverse_nodes([624], self): return False
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
             if not self._pather.traverse_nodes([624], self): return False
@@ -1268,7 +1252,7 @@ class Poison_Necro(IChar):
             self.Chaos_Attack_Basic()
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             #if Config().general["info_screenshots"]: cv2.imwrite(f"./info_screenshots/info_check_deseis_dead" + seal_layout + "_" + time.strftime("%Y%m%d_%H%M%S") + ".png", grab())
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
@@ -1294,7 +1278,7 @@ class Poison_Necro(IChar):
             self._pather.traverse_nodes(nodes3, self, time_out=3)
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             #if Config().general["info_screenshots"]: cv2.imwrite(f"./info_screenshots/info_check_deseis_dead" + seal_layout + "_" + time.strftime("%Y%m%d_%H%M%S") + ".png", grab())
             ### LOOT ###
             self._picked_up_items |= self._pickit.pick_up_items(self)
@@ -1320,7 +1304,7 @@ class Poison_Necro(IChar):
             pos_m = convert_abs_to_monitor((0, 0))
             self.Chaos_Attack_Basic()
             ### SUMMON ###
-            self.Summon_Check()
+            self.Raise_Random()
             ### LOOT ###
             #self._picked_up_items |= self._pickit.pick_up_items(self)
 
